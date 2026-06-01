@@ -1,7 +1,14 @@
 pipeline {
     agent any
 
-    stages {
+        stages {
+            stage('Build') {
+        steps {
+            sh 'npm install'
+            sh 'npm run build'
+        }
+    } 
+
         stage('Deploy') {
             agent {
                 docker {
@@ -14,9 +21,16 @@ pipeline {
                     npm install netlify-cli@20.1.1
                     node_modules/.bin/netlify --version
                     node_modules/.bin/netlify status
-                    node_modules/.bin/netlify deploy --dir=build --prod
-
                 '''
+                withCredentials([string(credentialsId: 'NETLIFY_AUTH_TOKEN', variable: 'NETLIFY_AUTH_TOKEN')]) {
+                sh '''
+                    node_modules/.bin/netlify deploy \
+                    --auth $NETLIFY-token \
+                    --dir build \
+                    --prod
+                '''
+}
+
             }
         }
     }
