@@ -7,5 +7,19 @@ pipeline {
                 echo 'Hello World'
             }
         }
+        stage('AWS'){
+            agent{
+                docker{
+                    image 'amazon/aws-cli'
+                    args "--entrypoints=''"
+                }
+            }
+            steps{
+                sh '''
+                    aws --version 
+                    aws s3 ls
+                  '''
+            }
+        }
     }
 }
